@@ -9,7 +9,7 @@ const scriptNames = {
   error: "overridePresetError.ts",
 };
 
-const exec = util.promisify(child.exec);
+const execFile = util.promisify(child.execFile);
 
 // Global variable __dirname no longer available in ES6 modules.
 // Solutions: https://stackoverflow.com/questions/46745014/alternative-for-dirname-in-node-js-when-using-es6-modules
@@ -23,11 +23,11 @@ describe("Override preset", () => {
     // `LODESTAR_PRESET` must not be set to properly test preset override
     if (process.env.LODESTAR_PRESET) delete process.env.LODESTAR_PRESET;
 
-    await exec(`node --import tsx ${path.join(__dirname, scriptNames.ok)}`);
+    await execFile("node", ["--import", "tsx", path.join(__dirname, scriptNames.ok)]);
   });
 
   it("Should throw trying to override preset in the wrong order", async () => {
-    await expect(exec(`node --import tsx ${path.join(__dirname, scriptNames.error)}`)).rejects.toThrow(
+    await expect(execFile("node", ["--import", "tsx", path.join(__dirname, scriptNames.error)])).rejects.toThrow(
       "Lodestar preset is already frozen"
     );
   });
